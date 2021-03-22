@@ -239,6 +239,97 @@
     }
   }
   ```
+- template 에서 `ref` 사용법
+  ```js
+  <template>
+    <div ref="root">This is a root element</div>
+  </template>
+
+  <script>
+    import { ref, onMounted } from '@vue/composition-api'
+
+    export default {
+      setup() {
+        const root = ref(null) // 여기서는 말 그대로 root.value는 null이다.
+
+        onMounted(() => {
+          // the DOM element will be assigned to the ref after initial render
+          // 돔이 마운트 되고나서 root.value에 값이 넣어진다.(즉, 초기 랜더링 이후에 값이 넣어짐)
+          console.log(root.value) // <div>This is a root element</div>
+        })
+
+        return {
+          root
+        }
+      }
+    }
+  </script>
+  ```
+
+- template안에서 `v-for` 사용할 때
+  ```js
+  <template>
+    <div v-for="(item, i) in list" :ref="el => { if (el) divs[i] = el }">
+      {{ item }}
+    </div>
+  </template>
+
+  <script>
+    import { ref, reactive, onBeforeUpdate } from 'vue'
+
+    export default {
+      setup() {
+        const list = reactive([1, 2, 3]) // 이렇게 해주면 list.value를 해 줄 필요없다.
+        const divs = ref([])
+
+        // make sure to reset the refs before each update
+        onBeforeUpdate(() => {
+          divs.value = []
+        })
+
+        return {
+          list,
+          divs
+        }
+      }
+    }
+  </script>
+  ```
+- template안에서 ref값을 `watching`하는 법
+  ```js
+  <template>
+    <div ref="root">This is a root element</div>
+  </template>
+
+  <script>
+    import { ref, watchEffect } from 'vue'
+
+    export default {
+      setup() {
+        const root = ref(null)
+
+        watchEffect(() => {
+          console.log(root.value) // => <div></div>
+        }, 
+        {
+          // 이 아이를 넣어줘야 root.value에 값이 들어간 뒤 실행된다.
+          flush: 'post'
+        })
+
+        return {
+          root
+        }
+      }
+    }
+  </script>
+  ```
+- `watch` vs `watchEffect` vs `computed`
+  - `watchEffect` when I want to watch multiple reactive properties and I don't care about old values
+  - `watch` when I want to watch multiple reactive properties and I may want old value
+  - `computed`는 `setup`안에서 reactive properties가 바뀌면 반응하지 못하고 에러가 난다
+  - `watchEffect`, `watch`는 `setup`안에서 reactive properties가 바뀌면 반응하고 로직이 실행된다
+  
+
 
 
 
