@@ -1,23 +1,18 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+  <h1>{{ title }}</h1>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue';
-
+import { ref } from '@vue/composition-api';
 export default {
-  name: 'Home',
-  components: {
-    HelloWorld,
-  },
-  methods: {
-    name() {
-      console.log('hi!!');
-    },
+  setup() {
+    let title = ref('Hello, Vue 3!');
+
+    setTimeout(() => {
+      title.value = 'THIS IS A NEW TITLE';
+    }, 5000);
+
+    return { title };
   },
 };
 </script>
